@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nikolai Burov <nikolai.burov@jolla.com>
+Date: Sun, 12 Apr 2026 16:22:02 +0300
+Subject: [PATCH] Disable devtools in browser
+
+Building the devtools requires Node.js, which isn't packaged on Sailfish
+OS at the moment.
+---
+ browser/installer/package-manifest.in | 2 +-
+ browser/moz.configure                 | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
+index 6ebf2f62c47757f16841d04c164d2d86447fcbd0..65ca5abd396c25b7d49b00cdc4d8d7a7ac3773fe 100644
+--- a/browser/installer/package-manifest.in
++++ b/browser/installer/package-manifest.in
+@@ -234,7 +234,7 @@
+ ; DevTools
+ @RESPATH@/browser/chrome/devtools@JAREXT@
+ @RESPATH@/browser/chrome/devtools.manifest
+-@RESPATH@/browser/@PREF_DIR@/debugger.js
++; @RESPATH@/browser/@PREF_DIR@/debugger.js
+ 
+ ; PdfJs
+ @RESPATH@/chrome/pdfjs.manifest
+diff --git a/browser/moz.configure b/browser/moz.configure
+index e8b401a7dfb21f07c7fd92c73d8eff61d2b9c2ff..f30de03856fc8a78a2bdc01ad1512c364a6f7313 100644
+--- a/browser/moz.configure
++++ b/browser/moz.configure
+@@ -16,7 +16,7 @@ imply_option("MOZ_PROFILE_MIGRATOR", True)
+ imply_option("MOZ_APP_VENDOR", "Mozilla")
+ imply_option("MOZ_APP_ID", "{ec8030f7-c20a-464f-9b0e-13a3a9e97384}")
+ # Include the DevTools client, not just the server (which is the default)
+-imply_option("MOZ_DEVTOOLS", "all")
++#imply_option("MOZ_DEVTOOLS", "all")
+ imply_option("BROWSER_CHROME_URL", "chrome://browser/content/browser.xhtml")
+ 
+ option(

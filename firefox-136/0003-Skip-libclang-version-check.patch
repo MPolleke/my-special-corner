@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nikolai Burov <nikolai.burov@jolla.com>
+Date: Sun, 12 Apr 2026 16:20:24 +0300
+Subject: [PATCH] Skip libclang version check
+
+Builds in sb2 use the host libclang, which cannot be loaded from the
+the target python interpreter.
+---
+ build/moz.configure/bindgen.configure | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/build/moz.configure/bindgen.configure b/build/moz.configure/bindgen.configure
+index af5a0cd7573d5b9159d4db32d8e6195a4d9c7bf0..0a3012c6b68412cb67d0993ebd34b6f094b51c4f 100644
+--- a/build/moz.configure/bindgen.configure
++++ b/build/moz.configure/bindgen.configure
+@@ -287,6 +287,7 @@ def bindgen_config_paths(clang, libclang, build_project):
+ @imports(_from="ctypes", _import="CDLL")
+ @imports(_from="textwrap", _import="dedent")
+ def min_libclang_version(libclang):
++    return True
+     try:
+         lib = CDLL(libclang)
+         # We want at least 5.0. The API we test below is enough for that.

@@ -1,0 +1,29 @@
+diff -uNr firefox-91.9.1-patch1/build/moz.configure/rust.configure firefox-91.9.1-patch2/build/moz.configure/rust.configure
+--- firefox-91.9.1-patch1/build/moz.configure/rust.configure	2026-04-24 17:24:29.914680867 +0200
++++ firefox-91.9.1-patch2/build/moz.configure/rust.configure	2026-04-24 17:30:24.752511895 +0200
+@@ -641,8 +641,8 @@
+     if opt_level == "0" and not debug_rust:
+         debug_assertions = False
+ 
+-    if debug_symbols:
+-        debug_info = "2"
++    #if debug_symbols:
++    #    debug_info = "2"
+ 
+     opts = []
+ 
+diff -uNr firefox-91.9.1-patch1/config/makefiles/rust.mk firefox-91.9.1-patch2/config/makefiles/rust.mk
+--- firefox-91.9.1-patch1/config/makefiles/rust.mk	2022-05-20 02:42:20.000000000 +0200
++++ firefox-91.9.1-patch2/config/makefiles/rust.mk	2026-04-24 17:36:09.841409027 +0200
+@@ -69,8 +69,10 @@
+ # Enable link-time optimization for release builds, but not when linking
+ # gkrust_gtest. And not when doing cross-language LTO.
+ ifndef MOZ_LTO_RUST_CROSS
+-ifeq (,$(findstring gkrust_gtest,$(RUST_LIBRARY_FILE)))
++ifeq (,$(findstring gkrust,$(RUST_LIBRARY_FILE)))
+ cargo_rustc_flags += -Clto
++else
++cargo_rustc_flags += -Clto=thin
+ endif
+ # We need -Cembed-bitcode=yes for all crates when using -Clto.
+ RUSTFLAGS += -Cembed-bitcode=yes

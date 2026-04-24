@@ -1,0 +1,29 @@
+diff -uNr firefox-102.9.0-patch1/build/moz.configure/rust.configure firefox-102.9.0-patch2/build/moz.configure/rust.configure
+--- firefox-102.9.0-patch1/build/moz.configure/rust.configure	2026-04-24 18:00:55.622695104 +0200
++++ firefox-102.9.0-patch2/build/moz.configure/rust.configure	2026-04-24 18:05:34.216792269 +0200
+@@ -653,8 +653,8 @@
+     if opt_level == "0" and not debug_rust:
+         debug_assertions = False
+ 
+-    if debug_symbols:
+-        debug_info = "2"
++    #if debug_symbols:
++    #    debug_info = "2"
+ 
+     opts = []
+ 
+diff -uNr firefox-102.9.0-patch1/config/makefiles/rust.mk firefox-102.9.0-patch2/config/makefiles/rust.mk
+--- firefox-102.9.0-patch1/config/makefiles/rust.mk	2023-03-10 00:59:36.000000000 +0100
++++ firefox-102.9.0-patch2/config/makefiles/rust.mk	2026-04-24 18:15:25.848516951 +0200
+@@ -89,8 +89,10 @@
+ ifndef rustflags_sancov
+ # Never enable when coverage is enabled to work around https://github.com/rust-lang/rust/issues/90045.
+ ifndef MOZ_CODE_COVERAGE
+-ifeq (,$(findstring gkrust_gtest,$(RUST_LIBRARY_FILE)))
++ifeq (,$(findstring gkrust,$(RUST_LIBRARY_FILE)))
+ cargo_rustc_flags += -Clto
++else
++cargo_rustc_flags += -Clto=thin
+ endif
+ # We need -Cembed-bitcode=yes for all crates when using -Clto.
+ RUSTFLAGS += -Cembed-bitcode=yes

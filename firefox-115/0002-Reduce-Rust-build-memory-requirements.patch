@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nikolai Burov <nikolai.burov@jolla.com>
+Date: Sun, 12 Apr 2026 16:18:53 +0300
+Subject: [PATCH] Reduce Rust build memory requirements
+
+Disable debuginfo for Rust components. Link gkrust with ThinLTO instead
+of full LTO.
+---
+ build/moz.configure/rust.configure | 4 ++--
+ config/makefiles/rust.mk           | 4 ++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/build/moz.configure/rust.configure b/build/moz.configure/rust.configure
+index eb30b98b7d3d45b4b1c2595994a71c47f6e986c4..1a685f5465c774bdfa0b5f83dea6609aa1c34c0a 100644
+--- a/build/moz.configure/rust.configure
++++ b/build/moz.configure/rust.configure
+@@ -679,8 +679,8 @@ def rust_compile_flags(
+     if opt_level == "0" and not debug_rust:
+         debug_assertions = False
+ 
+-    if debug_symbols:
+-        debug_info = "2"
++    #if debug_symbols:
++    #    debug_info = "2"
+ 
+     opts = []
+ 
+diff --git a/config/makefiles/rust.mk b/config/makefiles/rust.mk
+index ba024e8763d9f5483855c16ff337dcae9860163a..50a208ecafd9fd29277d8ba22536a08bfa6298d6 100644
+--- a/config/makefiles/rust.mk
++++ b/config/makefiles/rust.mk
+@@ -101,7 +101,11 @@ ifndef rustflags_sancov
+ # Never enable when coverage is enabled to work around https://github.com/rust-lang/rust/issues/90045.
+ ifndef MOZ_CODE_COVERAGE
+ ifeq (,$(findstring gkrust_gtest,$(RUST_LIBRARY_FILE)))
++ifeq (,$(findstring gkrust,$(RUST_LIBRARY_FILE)))
+ cargo_rustc_flags += -Clto$(if $(filter full,$(MOZ_LTO_RUST_CROSS)),=fat)
++else
++cargo_rustc_flags += -Clto=thin
++endif
+ endif
+ # We need -Cembed-bitcode=yes for all crates when using -Clto.
+ RUSTFLAGS += -Cembed-bitcode=yes
