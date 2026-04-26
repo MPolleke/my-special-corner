@@ -1,0 +1,22 @@
+diff -up ./nls/compose.dir.pre.tv ./nls/compose.dir.pre
+--- ./nls/compose.dir.pre.tv	2013-06-10 15:23:57.471970607 +0200
++++ ./nls/compose.dir.pre	2013-06-10 15:24:41.715315546 +0200
+@@ -400,6 +400,7 @@ en_US.UTF-8/Compose:		mai_IN.UTF-8
+ en_US.UTF-8/Compose:		mi_NZ.UTF-8
+ en_US.UTF-8/Compose:		mk_MK.UTF-8
+ en_US.UTF-8/Compose:		ml_IN.UTF-8
++en_US.UTF-8/Compose:		mn_MN.UTF-8
+ en_US.UTF-8/Compose:		mr_IN.UTF-8
+ en_US.UTF-8/Compose:		ms_MY.UTF-8
+ en_US.UTF-8/Compose:		mt_MT.UTF-8
+diff -up ./nls/locale.dir.pre.tv ./nls/locale.dir.pre
+--- ./nls/locale.dir.pre.tv	2013-06-10 15:20:07.170569683 +0200
++++ ./nls/locale.dir.pre	2013-06-10 15:22:59.976626354 +0200
+@@ -400,6 +400,7 @@ en_US.UTF-8/XLC_LOCALE:
+ en_US.UTF-8/XLC_LOCALE:			mi_NZ.UTF-8
+ en_US.UTF-8/XLC_LOCALE:			mk_MK.UTF-8
+ en_US.UTF-8/XLC_LOCALE:			ml_IN.UTF-8
++en_US.UTF-8/XLC_LOCALE:			mn_MN.UTF-8
+ en_US.UTF-8/XLC_LOCALE:			mr_IN.UTF-8
+ en_US.UTF-8/XLC_LOCALE:			ms_MY.UTF-8
+ en_US.UTF-8/XLC_LOCALE:			mt_MT.UTF-8
