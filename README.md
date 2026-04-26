@@ -68,6 +68,15 @@ After installing packages, exit Scratchbox2 and enter Scratchbox2 in the usual w
 https://github.com/abranson/atk
 https://github.com/abranson/libepoxy
 https://github.com/n2klb/gtk
+x11-util-macros
+x11-proto-devel
+libxau-devel
+libxdmcp-devel
+libpthread-stubs
+libxcb-devel
+libx11-devel or pkgconfig(x11)
+
+
 
 
 ### Build Requirements
@@ -78,6 +87,16 @@ Rust 1.51
 gtk3
 atk
 libepoxy
+x11-util-macros
+x11-proto-devel
+libxau-devel
+libxdmcp-devel
+libpthread-stubs
+libxcb-devel
+libx11-devel or pkgconfig(x11)
+
+
+
 
 # Firefox 102 esr needs:
 needs updated patch1, patch4
