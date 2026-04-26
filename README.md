@@ -75,7 +75,9 @@ libxdmcp-devel
 libpthread-stubs
 libxcb-devel
 libx11-devel or pkgconfig(x11)
-
+libice-devel
+libsm-devel
+libxt-devel
 
 
 
@@ -94,7 +96,9 @@ libxdmcp-devel
 libpthread-stubs
 libxcb-devel
 libx11-devel or pkgconfig(x11)
-
+libice-devel
+libsm-devel
+libxt-devel
 
 
 
