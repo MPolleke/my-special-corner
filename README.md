@@ -78,6 +78,8 @@ libx11-devel or pkgconfig(x11)
 libice-devel
 libsm-devel
 libxt-devel
+libxext-devel
+
 
 
 
@@ -99,6 +101,8 @@ libx11-devel or pkgconfig(x11)
 libice-devel
 libsm-devel
 libxt-devel
+libxext-devel
+
 
 
 
