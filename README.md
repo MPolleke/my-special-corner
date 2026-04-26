@@ -65,8 +65,9 @@ After installing packages, exit Scratchbox2 and enter Scratchbox2 in the usual w
 
 ### Build Order
 
-
-
+https://github.com/abranson/atk
+https://github.com/abranson/libepoxy
+https://github.com/n2klb/gtk
 
 
 ### Build Requirements
@@ -74,14 +75,19 @@ After installing packages, exit Scratchbox2 and enter Scratchbox2 in the usual w
 # Firefox 91 esr needs:
 needs updated patch1, patch4
 Rust 1.51
+gtk3
+atk
+libepoxy
 
 # Firefox 102 esr needs:
 needs updated patch1, patch4
 Rust 1.59
+cbindgen 0.23.0
 
 # Firefox 115 esr needs:
 needs updated patch1, patch4
 Rust 1.66
+cbindgen 0.24.3
 
 # Firefox 131 needs:
 Rust 1.76
@@ -91,4 +97,20 @@ Rust 1.76
 
 # Firefox 140 esr needs:
 Rust 1.85
+
+
+# SailfishOS-5.0.0.62 provides:
+Rust 1.75
+cbindgen 0.19
+nspr 4.35
+nss 3.101
+
+
+### SFDK:
+
+https://docs.sailfishos.org/Tools/Sailfish_SDK/Building_packages/
+
+sfdk config --push target SailfishOS-5.0.0.62-aarch64
+
+sfdk build
 
