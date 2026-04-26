@@ -49,6 +49,7 @@ BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:	pkgconfig(nspr) >= 4.36.0
 BuildRequires: 	pkgconfig(nss) >= 3.110.0
+BuildRequires:	pkgconfig(dbus-glib-1) >= 0.60
 
 %description
 Mozilla Firefox web browser
@@ -141,7 +142,7 @@ ac_add_options --disable-tests
 ac_add_options --enable-default-toolkit=cairo-gtk3-wayland
 ac_add_options --with-system-nspr
 ac_add_options --with-system-nss
-ac_add_options --with-libclang-path='%{build_dir}/lib/'
+#ac_add_options --with-libclang-path='%{build_dir}/lib/'
 ac_add_options --disable-nodejs
 ac_add_options --without-wasm-sandboxed-libraries
 
