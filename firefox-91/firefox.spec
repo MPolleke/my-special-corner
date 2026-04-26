@@ -50,6 +50,7 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:	pkgconfig(nspr) >= 4.36.0
 BuildRequires: 	pkgconfig(nss) >= 3.110.0
 BuildRequires:	pkgconfig(dbus-glib-1) >= 0.60
+BuildRequires:	pkgconfig(x11)
 
 %description
 Mozilla Firefox web browser
