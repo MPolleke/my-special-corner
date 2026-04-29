@@ -9,8 +9,53 @@
 %global privlibs %{privlibs}|libmozwayland
 %global privlibs %{privlibs}|libxul
 
+%define greversion    91.13.1
+%define milestone     %{greversion}
+
+#%define embedlite_config merqtxulrunner
+
+%define compile_environment 1
+%define system_nspr         1
+%define system_nss          1
+%define system_sqlite       1
+%define system_ffi          1
+%define system_hunspell     1
+%define system_jpeg         1
+%define system_png          1
+%define system_icu          1
+%define system_zlib         1
+%define system_bz2          1
+%define system_pixman       1
+# TODO: Adapt vp9 codec to the new libvpx API. For now, use the internal libvpx (v1.6.1).
+%define system_libvpx       0
+%define system_libwebp      1
+
+
+%global mozappdir     %{_libdir}/%{name}-%{greversion}
+%global mozappdirdev  %{_libdir}/%{name}-devel-%{greversion}
+
+# Private/bundled libs the final package should not provide or depend on.
+%global privlibs             libfreebl3
+%global privlibs %{privlibs}|libmozalloc
+%global privlibs %{privlibs}|libmozsqlite3
+%global privlibs %{privlibs}|libnspr4
+%global privlibs %{privlibs}|libplc4
+%global privlibs %{privlibs}|libplds4
+%global privlibs %{privlibs}|libnss3
+%global privlibs %{privlibs}|libnssdbm3
+%global privlibs %{privlibs}|libnssutil3
+%global privlibs %{privlibs}|libsmime3
+%global privlibs %{privlibs}|libsoftokn3
+%global privlibs %{privlibs}|libssl3
+
 %global __provides_exclude ^(%{privlibs})\\.so
 %global __requires_exclude ^(%{privlibs})\\.so
+
+# Conditional for using a workaround which moves the .git away before build
+# in order to prevent cargo from updating git modules
+# This should only be needed for local builds on SDK as tar_git strips out
+# the .git directory already.
+%bcond_with git_workaround
 
 Name:		firefox
 Version:	91.9.1
@@ -20,15 +65,109 @@ Summary:	Mozilla Firefox
 License:	MPLv2.0
 URL:		https://www.firefox.com/
 Source0:	%{name}-%{version}.tar.bz2
-Patch1:		0001-Patch-glslopt-to-build-with-host-compiler.patch
-Patch2:		0002-Reduce-Rust-build-memory-requirements.patch
-Patch3:		0003-Skip-libclang-version-check.patch
-#Patch4:		0004-Disable-devtools-in-browser.patch
+
+# Patches from gecko-dev 25 april 2026
+#Patch1:     0001-sailfishos-gecko-Add-symlink-to-embedlite.-JB-52893.patch
+Patch2:     0002-sailfishos-qt-Bring-back-Qt-layer.-JB-50505.patch
+Patch3:     0003-sailfishos-gecko-Fix-embedlite-building.-JB-50505.patch
+Patch4:     0004-sailfishos-gecko-Revert-Bug-1611386-Drop-support-for.patch
+Patch5:     0005-sailfishos-gecko-Fix-build-version-requirements.patch
+Patch6:     0006-sailfishos-gecko-Read-rustc-host-from-environment.-J.patch
+Patch7:     0007-sailfishos-qt-Provide-checkbox-radio-renderer-for-Sa.patch
+Patch8:     0008-sailfishos-compositor-Fix-GLContextProvider-defines.patch
+#Patch9:     0009-sailfishos-ipc-Whitelist-sync-messages-of-EmbedLite..patch
+Patch10:    0010-sailfishos-components-Cleanup-static-components-defi.patch
+Patch11:    0011-sailfishos-gecko-Reduce-Rust-build-requirements.patch
+Patch12:    0012-sailfishos-gecko-Patch-glslopt-to-build-on-arm.patch
+Patch13:    0013-sailfishos-gecko-Disable-MOC-code-generation-for-mes.patch
+Patch14:    0014-sailfishos-gecko-Backport-Embed-MessageLoop-contruct.patch
+Patch15:    0015-sailfishos-gecko-Work-around-upstream-membarrier-cha.patch
+Patch16:    0016-sailfishos-gecko-Allow-compositor-specializations-to.patch
+Patch17:    0017-sailfishos-gecko-Revert-Bug-1676576-Remove-unused-fu.patch
+Patch18:    0018-sailfishos-gecko-Restore-GLScreenBuffer-and-TextureI.patch
+Patch19:    0019-sailfishos-gecko-Hackish-fix-for-preferences-usage-i.patch
+Patch20:    0020-sailfishos-gecko-Revert-Bug-1706051-Remove-some-IPC-.patch
+Patch21:    0021-sailfishos-gecko-Remove-NS_LITERAL_CSTRING-usage.patch
+Patch22:    0022-sailfishos-gecko-Revert-Bug-1494175-Remove-unimpleme.patch
+# mpol disabled, we are not building embedlite
+#Patch23:    0023-sailfishos-gecko-Fix-embedlite-building.-JB-50505.patch
+Patch24:    0024-sailfishos-gecko-Update-ProcInfo.patch
+Patch25:    0025-sailfishos-gecko-Revert-Bug-1567888-remove-unneeded-.patch
+Patch26:    0026-sailfishos-gecko-Restore-nsAppShell.h.patch
+Patch27:    0027-sailfishos-gecko-Add-support-for-aarch64-to-elfhack..patch
+Patch28:    0028-sailfishos-gecko-Allow-gen_last_modified.py-to-compl.patch
+Patch29:    0029-sailfishos-gecko-Force-to-build-mozglue-and-xpcomglu.patch
+Patch30:    0030-sailfishos-gecko-Revert-Bug-445128-Stop-putting-the-.patch
+Patch31:    0031-sailfishos-gecko-Revert-Bug-1427455-Remove-unused-va.patch
+Patch32:    0032-sailfishos-gecko-Revert-Bug-1333826-Remove-SDK_FILES.patch
+Patch33:    0033-sailfishos-gecko-Revert-Bug-1333826-Remove-the-make-.patch
+Patch34:    0034-sailfishos-gecko-Revert-Bug-1333826-Remove-a-few-ref.patch
+Patch35:    0035-sailfishos-gecko-Introduce-EmbedInitGlue-to-the-mozg.patch
+Patch36:    0036-sailfishos-gecko-Split-namespace-into-two-blocks.patch
+#Patch37:    0037-sailfishos-gecko-Create-EmbedLiteCompositorBridgePar.patch
+Patch38:    0038-sailfishos-egl-Do-not-create-CreateFallbackSurface.-.patch
+Patch39:    0039-sailfishos-gecko-Make-PresShell-SetIsActive-public.patch
+Patch40:    0040-sailfishos-egl-Drop-swap_buffers_with_damage-extensi.patch
+Patch41:    0041-sailfishos-gecko-Add-patch-to-fix-32-bit-builds.patch
+Patch42:    0042-sailfishos-gecko-Fix-gfxPlatform-AsyncPanZoomEnabled.patch
+Patch43:    0043-sailfishos-gecko-Supress-URLQueryStrippingListServic.patch
+Patch44:    0044-sailfishos-gecko-Allow-file-scheme-when-loading-Open.patch
+#Patch45:    0045-sailfishos-gecko-Add-and-adjust-embedlite-static-pre.patch
+Patch46:    0046-sailfishos-gecko-Disable-SessionStore-functionality.patch
+Patch47:    0047-sailfishos-gecko-Enable-dconf.patch
+Patch48:    0048-sailfishos-gecko-Prevent-errors-from-DownloadPrompte.patch
+Patch49:    0049-sailfishos-gecko-Restore-NotifyDidPaint-event-and-ti.patch
+Patch50:    0050-sailfishos-gecko-Adapt-build-configuration-for-Sailf.patch
+Patch51:    0051-sailfishos-webrtc-Update-GN-build-files-for-WebRTC.-.patch
+Patch52:    0052-sailfishos-gecko-Disable-desktop-sharing-feature-on-.patch
+Patch53:    0053-sailfishos-gecko-Enable-GMP-for-encoding-decoding.-J.patch
+Patch54:    0054-sailfishos-webrtc-Implement-video-capture-module.-JB.patch
+Patch55:    0055-sailfishos-webrtc-Regenerate-moz.build-files.-JB-537.patch
+Patch56:    0056-sailfishos-gecko-Drop-AudioPlayback-messages-if-no-e.patch
+Patch57:    0057-sailfishos-gecko-Get-ContentFrameMessageManager-via-.patch
+Patch58:    0058-sailfishos-gecko-Convert-panic-into-early-return-in-.patch
+Patch59:    0059-sailfishos-gecko-Allow-LoginManagerPrompter-to-find-.patch
+Patch60:    0060-sailfishos-gecko-Add-support-for-prefers-color-schem.patch
+Patch61:    0061-sailfishos-gecko-Update-hash-for-mapped_hyph.patch
+Patch62:    0062-sailfishos-gecko-Fix-content-action-integration-to-w.patch
+Patch63:    0063-sailfishos-gecko-Make-fullscreen-enabling-work-as-us.patch
+Patch64:    0064-sailfishos-gecko-Prioritize-GMP-plugins-over-all-oth.patch
+Patch65:    0065-sailfishos-gecko-Force-recycling-of-gmp-droid-instan.patch
+Patch66:    0066-sailfishos-gecko-Force-use-of-mobile-video-controls..patch
+Patch67:    0067-sailfishos-gecko-Fix-video-hardware-accelaration-not.patch
+Patch68:    0068-sailfishos-gecko-Add-a-video-decoder-based-on-gecko-.patch
+Patch69:    0069-sailfishos-gecko-Fix-audio-underruns-for-fullduplex-.patch
+Patch70:    0070-sailfishos-gecko-Bug-1750760-Create-ffmpeg59-module-.patch
+Patch71:    0071-sailfishos-gecko-Bug-1750760-Open-libavcodec.so.59-l.patch
+Patch72:    0072-sailfishos-gecko-Bug-1750760-Update-audio-and-video-.patch
+Patch73:    0073-sailfishos-gecko-Bug-1761471-FFmpeg-5.0-Get-frame-co.patch
+Patch74:    0074-sailfishos-gecko-Bug-1758948-FFmpeg-Use-AVFrame-pts-.patch
+Patch75:    0075-sailfishos-gecko-Ensure-audio-continues-when-screen-.patch
+Patch76:    0076-sailfishos-gecko-Fix-build-failure-due-to-rust-lang-.patch
+Patch77:    0077-sailfishos-gecko-Fix-unstable-name-collisions-warnin.patch
+#Patch78:    0078-sailfishos-embedlite-egl-Fix-mesa-egl-display-and-bu.patch
+Patch79:    0079-sailfishos-gecko-Delete-startupCache-if-it-s-stale.patch
+Patch80:    0080-sailfishos-gecko-Hardcode-loopback-address-for-profi.patch
+Patch81:    0081-sailfishos-gecko-Start-using-user-agent-builder.-JB-.patch
+Patch82:    0082-sailfishos-gecko-Disallow-page-zooming-if-the-meta-v.patch
+Patch83:    0083-sailfishos-gecko-Add-preference-to-bypass-CORS-on-ns.patch
+Patch84:    0084-sailfishos-gecko-Get-12-24h-timeformat-setting-from-.patch
+Patch85:    0085-Bug-1710603-Allow-stat-on-from-socket-process-for-gl.patch
+Patch86:    0086-Bug-1782988-Fix-use-of-arc4random_buf-use-in-ping.cp.patch
+Patch87:    0087-Bug-1777674-Add-missing-cstdint-include-to-support-G.patch
+Patch88:    0088-Bug-1811714-Add-a-few-missing-cstdint-includes-r-gfx.patch
+Patch89:    0089-sailfishos-gecko-Update-content-signature-root-hash..patch
+Patch90:    0090-Bug-1766848-Update-libevent-to-version-2.1.12.-r-jld.patch
+Patch91:    0091-Bug-1782988-Avoid-build-bustage-when-building-agains.patch
+Patch92:    0092-Bug-1773259-Work-around-build-failure-with-newer-cbi.patch
+Patch93:    0093-Bug-1769631-Remove-U-from-mode-parameters-for-variou.patch
+Patch94:    0094-Bug-1799982-Remove-uses-of-inline-flags-from-XPIDL-r.patch
+
 
 BuildRequires:	rust
 BuildRequires:	rust-std-static
 BuildRequires:	cargo
-BuildRequires:	cbindgen >= 0.27.0
+BuildRequires:	cbindgen
 BuildRequires:	clang-devel
 BuildRequires:	llvm
 BuildRequires:	python3-base
@@ -47,131 +186,248 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
-BuildRequires:	pkgconfig(nspr) >= 4.36.0
-BuildRequires: 	pkgconfig(nss) >= 3.110.0
+BuildRequires:	pkgconfig(nspr) >= 4.29
+BuildRequires: 	pkgconfig(nss) >= 3.68
 BuildRequires:	pkgconfig(dbus-glib-1) >= 0.60
 BuildRequires:	pkgconfig(x11)
+BuildRequires:  pkgconfig(libwebp) >= 1.0.2
+BuildRequires:  pkgconfig(libwebpdemux) >= 1.0.2
 
 %description
 Mozilla Firefox web browser
 
 %define build_dir $PWD/..
 
+# Build output directory.
+#%define BUILD_DIR "$PWD"/../obj-build-mer-qt-xr
+
 %prep
 %autosetup -p1 -n %{name}-%{version}
 
 %ifarch %arm32
 %define SB2_TARGET armv7-unknown-linux-gnueabihf
-echo "Target is %SB2_TARGET"
 %endif
 %ifarch %arm64
 %define SB2_TARGET aarch64-unknown-linux-gnu
-echo "Target is %SB2_TARGET"
 %endif
 %ifarch %ix86
 %define SB2_TARGET i686-unknown-linux-gnu
-echo "Target is %SB2_TARGET"
 %endif
 
 echo "Target is %SB2_TARGET"
 
-cat > "%{build_dir}"/rpm-shared.env <<EOF
-export MOZCONFIG='%{build_dir}/mozconfig'
-export LIBDIR='%{_libdir}'
-export MOZ_OBJDIR='%{build_dir}/obj'
-export CARGO_HOME='%{build_dir}/cargo'
-export MOZBUILD_STATE_PATH='%{build_dir}'
-export MACH_BUILD_PYTHON_NATIVE_PACKAGE_SOURCE=system
+mkdir -p "%BUILD_DIR"
+echo "export MOZCONFIG=%BUILD_DIR/mozconfig" >> "%BUILD_DIR"/rpm-shared.env
+echo "export LIBDIR='%{_libdir}'" >> "%BUILD_DIR"/rpm-shared.env
+echo "export QT_QPA_PLATFORM=minimal" >> "%BUILD_DIR"/rpm-shared.env
+echo "export MOZ_OBJDIR=%BUILD_DIR" >> "%BUILD_DIR"/rpm-shared.env
+echo "export CARGO_HOME=%BUILD_DIR/cargo" >> "%BUILD_DIR"/rpm-shared.env
 
 # When cross-compiling under SB2 rust needs to know what arch to emit
 # when nothing is specified on the command line. That usually defaults
 # to "whatever rust was built as" but in SB2 rust is accelerated and
 # would produce x86 so this is how it knows differently. Not needed
 # for native x86 builds
-export SB2_RUST_TARGET_TRIPLE=%SB2_TARGET
+echo "export SB2_RUST_TARGET_TRIPLE=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
+echo "export RUST_HOST_TARGET=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
 
-export RUST_TARGET=%SB2_TARGET
-export TARGET=%SB2_TARGET
-export HOST=%SB2_TARGET
-export SB2_TARGET=%SB2_TARGET
-
-export CC=gcc
-export CXX=g++
-export AR="gcc-ar"
-export NM="gcc-nm"
-export RANLIB="gcc-ranlib"
-
-# llvm tool used by default would use too much memory
-export READELF=readelf
-
-export CARGOFLAGS=" --offline"
-export CARGO_NET_OFFLINE=1
-export CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf
-export CARGO_CFG_TARGET_ARCH=arm
-EOF
-
-%build
-source "%{build_dir}"/rpm-shared.env
-
-# Expose the elf32-i386 libclang.so for use inside the arm target, JB#55042
-mkdir -p "%{build_dir}"/lib
-SBOX_DISABLE_MAPPING=1 find /usr/lib -maxdepth 1 -name 'libclang.so.*' -exec cp {} "%{build_dir}"/lib/ \;
-
-cat > "$MOZCONFIG" <<EOF
-mk_add_options MOZ_OBJDIR='%{build_dir}/obj'
+echo "export RUST_TARGET=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
+echo "export TARGET=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
+echo "export HOST=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
+echo "export SB2_TARGET=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
 
 %ifarch %arm32 %arm64
-# Garbage collect on arm to reduce memory requirements, JB#55074
-FIX_LDFLAGS="-Wl,--gc-sections -Wl,--reduce-memory-overheads -Wl,--no-keep-memory"
-%else
-FIX_LDFLAGS="-Wl,--reduce-memory-overheads -Wl,--no-keep-memory"
+# This should be define...
+echo "export CROSS_COMPILE=%SB2_TARGET" >> "%BUILD_DIR"/rpm-shared.env
+
+# This avoids a malloc hang in sb2 gated calls to execvp/dup2/chdir
+# during fork/exec. It has no effect outside sb2 so doesn't hurt
+# native builds.
+export SB2_RUST_EXECVP_SHIM="/usr/bin/env LD_PRELOAD=/usr/lib/libsb2/libsb2.so.1 /usr/bin/env"
+export SB2_RUST_USE_REAL_EXECVP=Yes
+export SB2_RUST_USE_REAL_FN=Yes
 %endif
-export LDFLAGS="\$FIX_LDFLAGS"
-export WRAP_LDFLAGS="\$FIX_LDFLAGS"
-mk_add_options LDFLAGS="\$FIX_LDFLAGS"
 
-. \$topsrcdir/browser/config/mozconfig
+echo "export CC=gcc" >> "%BUILD_DIR"/rpm-shared.env
+echo "export CXX=g++" >> "%BUILD_DIR"/rpm-shared.env
+echo "export AR=\"gcc-ar\"" >> "%BUILD_DIR"/rpm-shared.env
+echo "export NM=\"gcc-nm\"" >> "%BUILD_DIR"/rpm-shared.env
+echo "export RANLIB=\"gcc-ranlib\"" >> "%BUILD_DIR"/rpm-shared.env
 
-ac_add_options --disable-bootstrap
-ac_add_options --prefix=%{_prefix}
-ac_add_options --libdir=%{_libdir}
-ac_add_options --includedir=%{_includedir}
-ac_add_options --enable-release
-ac_add_options --disable-updater
-ac_add_options --disable-crashreporter
-ac_add_options --disable-tests
-ac_add_options --enable-default-toolkit=cairo-gtk3-wayland
-ac_add_options --with-system-nspr
-ac_add_options --with-system-nss
-#ac_add_options --with-libclang-path='%{build_dir}/lib/'
-ac_add_options --disable-nodejs
-ac_add_options --without-wasm-sandboxed-libraries
+echo "export CARGOFLAGS=\" --offline\"" >> "%BUILD_DIR"/rpm-shared.env
+echo "export CARGO_NET_OFFLINE=1" >> "%BUILD_DIR"/rpm-shared.env
+echo "export CARGO_BUILD_TARGET=armv7-unknown-linux-gnueabihf" >> "%BUILD_DIR"/rpm-shared.env
+echo "export CARGO_CFG_TARGET_ARCH=arm" >> "%BUILD_DIR"/rpm-shared.env
+
+# Force MOZ_BUILD_DATE env var in order to have more reproducible builds
+# only when we're building from tarball (OBS)
+# If you want to have a fixed date, then uncomment the line below
+# echo "export MOZ_BUILD_DATE=20210831010100" >> "%BUILD_DIR"/rpm-shared.env
+for a in %{_sourcedir}/*.tar.bz2; do
+    if [ -f $a ]; then
+        TARBALL_DATE=`stat -c %Y $a`
+        BUILD_DATE=`date -d @${TARBALL_DATE} +"%Y%m%d%H%M%%S"`
+        echo "export MOZ_BUILD_DATE=${BUILD_DATE}" >> "%BUILD_DIR"/rpm-shared.env
+    fi
+    break
+done
+
+%build
+
+# Move the .git directory out of the way as cargo gets confused and thinks it
+# needs to update our submodule.
+%if %{with git_workaround}
+%__mv %_builddir/.git %_builddir/.git-disabled ||:
+%endif
+
+source "%BUILD_DIR"/rpm-shared.env
+
+# hack for when not using virtualenv
+ln -sf "%BUILD_DIR"/config.status $PWD/build/config.status
+
+%ifarch %arm32 %arm64
+# Make stdc++ headers available on a fresh path to work around include_next bug JB#55058
+if [ ! -L "%BUILD_DIR"/include ] ; then ln -s /usr/include/c++/*/ "%BUILD_DIR"/include; fi
+
+# Expose the elf32-i386 libclang.so.15 for use inside the arm target, JB#55042
+mkdir -p "%BUILD_DIR"/lib
+#mpol use lib64 for scratchbox with aarch64
+#SBOX_DISABLE_MAPPING=1 cp /usr/lib/libclang.so.15 "%BUILD_DIR"/lib/
+cp /usr/lib64/libclang.so.15.0.7 "%BUILD_DIR"/lib/libclang.so.15
+echo "ac_add_options --with-libclang-path='"%BUILD_DIR"/lib/'" >> "$MOZCONFIG"
+
+# Do not build as thumb since it breaks video decoding.
+%ifarch %arm32
+echo "ac_add_options --with-thumb=no" >> "$MOZCONFIG"
+%endif
+%endif
+
+echo "mk_add_options MOZ_OBJDIR='%BUILD_DIR'" >> "$MOZCONFIG"
+# XXX: gold crashes when building gecko for both i486 and x86_64
+#echo "export CFLAGS=\"\$CFLAGS -fuse-ld=gold \"" >> "$MOZCONFIG"
+#echo "export CXXFLAGS=\"\$CXXFLAGS -fuse-ld=gold \"" >> "$MOZCONFIG"
+#echo "export LD=ld.gold" >> "$MOZCONFIG"
+# Silence repeating compiler warnings
+echo "export CFLAGS=\"\$CFLAGS -Wno-psabi -Wno-attributes \"" >> "$MOZCONFIG"
+echo "export CXXFLAGS=\"\$CXXFLAGS -Wno-psabi -Wno-attributes \"" >> "$MOZCONFIG"
+echo "ac_add_options --disable-strip" >> "$MOZCONFIG"
+echo "ac_add_options --disable-install-strip" >> "$MOZCONFIG"
+
+# Reduce logging from release build
+# Doesn't work so disabled for now. Should be made logging-specific.
+# %if "%{?qa_stage_name}" == testing || "%{?qa_stage_name}" == release
+#echo "export CFLAGS=\"\$CFLAGS -DRELEASE_OR_BETA=1\"" >> "$MOZCONFIG"
+#echo "export CXXFLAGS=\"\$CXXFLAGS -DRELEASE_OR_BETA=1\"" >> "$MOZCONFIG"
+#%endif
+
+# Override the milestone for building devel gecko when needed
+echo "%{milestone}" > "$PWD/config/milestone.txt"
+
+echo "ac_add_options --with-system-nspr" >> "$MOZCONFIG"
+echo "ac_add_options --with-system-nss" >> "$MOZCONFIG"
+echo "ac_add_options --enable-system-sqlite" >> "$MOZCONFIG"
+echo "ac_add_options --with-system-ffi" >> "${MOZCONFIG}"
+echo "ac_add_options --with-system-icu" >> "${MOZCONFIG}"
+echo "ac_add_options --with-system-png" >> "${MOZCONFIG}"
+echo "ac_add_options --with-system-jpeg" >> "${MOZCONFIG}"
+echo "ac_add_options --with-system-zlib" >> "${MOZCONFIG}"
+echo "ac_add_options --enable-system-pixman" >> "${MOZCONFIG}"
+#echo "ac_add_options --with-system-libvpx" >> "${MOZCONFIG}"
+echo "ac_add_options --with-system-webp" >> "${MOZCONFIG}"
+echo "ac_add_options --disable-nodejs" >> "${MOZCONFIG}"
+echo "ac_add_options --disable-bootstrap" >> "$MOZCONFIG"
+echo "ac_add_options --prefix=%{_prefix}" >> "$MOZCONFIG"
+echo "ac_add_options --libdir=%{_libdir}" >> "$MOZCONFIG"
+echo "ac_add_options --includedir=%{_includedir}" >> "$MOZCONFIG"
+echo "ac_add_options --enable-release" >> "$MOZCONFIG"
+echo "ac_add_options --disable-updater" >> "$MOZCONFIG"
+echo "ac_add_options --disable-crashreporter" >> "$MOZCONFIG"
+echo "ac_add_options --disable-tests" >> "$MOZCONFIG"
+echo "ac_add_options --enable-default-toolkit=cairo-gtk3-wayland" >> "$MOZCONFIG"
+echo "ac_add_options --without-wasm-sandboxed-libraries" >> "$MOZCONFIG"
 
 %ifarch %ix86
-ac_add_options --disable-startupcache
-ac_add_options --host=i686-unknown-linux-gnu
+echo "ac_add_options --disable-startupcache" >> "$MOZCONFIG"
+echo "ac_add_options --host=i686-unknown-linux-gnu" >> "$MOZCONFIG"
 %endif
 
 %ifarch %arm32
-ac_add_options --host=armv7-unknown-linux-gnueabihf
+echo "ac_add_options --host=armv7-unknown-linux-gnueabihf" >> "$MOZCONFIG"
 %endif
 
 %ifarch %arm64
-ac_add_options --host=aarch64-unknown-linux-gnu
-
+echo "ac_add_options --host=aarch64-unknown-linux-gnu" >> "$MOZCONFIG"
 %endif
-EOF
 
-export CFLAGS="$(echo " %{optflags} " | sed 's/ -fexceptions / /g')"
-export CXXFLAGS="$(echo " %{optflags} " | sed 's/ -fexceptions / /g')"
+# Gecko tries to add the gre lib dir to LD_LIBRARY_PATH when loading plugin-container,
+# but as sailfish-browser has privileged EGID, glibc removes it for security reasons.
+# Set ELF RPATH through LDFLAGS. Needed for plugin-container and libxul.so
+# Additionally we limit the memory usage during linking
+%ifarch %arm32 %arm64
+# Garbage collect on arm to reduce memory requirements, JB#55074
+echo 'FIX_LDFLAGS="-Wl,--gc-sections -Wl,--reduce-memory-overheads -Wl,--no-keep-memory -Wl,-rpath=%{mozappdir}"' >> "${MOZCONFIG}"
+%else
+echo 'FIX_LDFLAGS="-Wl,--reduce-memory-overheads -Wl,--no-keep-memory -Wl,-rpath=%{mozappdir}"' >> "${MOZCONFIG}"
+%endif
+echo 'export LDFLAGS="$FIX_LDFLAGS"' >> "${MOZCONFIG}"
+echo 'LDFLAGS="$FIX_LDFLAGS"' >> "${MOZCONFIG}"
+echo 'export WRAP_LDFLAGS="$FIX_LDFLAGS"' >> "${MOZCONFIG}"
+echo 'mk_add_options LDFLAGS="$FIX_LDFLAGS"' >> "${MOZCONFIG}"
+
+RPM_BUILD_NCPUS=`nproc`
 
 export MACH_USE_SYSTEM_PYTHON=1
-./mach build
+
+./mach build -j$RPM_BUILD_NCPUS
+# This might be unnecessary but previously some files
+# were only behind FASTER_RECURSIVE_MAKE but only adds few
+# minutes for the build.
+./mach build faster FASTER_RECURSIVE_MAKE=1 -j$RPM_BUILD_NCPUS
+
+# Restore .git directory after build
+%if %{with git_workaround}
+%__mv %_builddir/.git-disabled %_builddir/.git ||:
+%endif
 
 %install
-%{__make} -C "%{build_dir}"/obj/browser/installer install STRIP=/bin/true DESTDIR=%{buildroot}
-rm -f %{buildroot}%{_libdir}/firefox/firefox-bin
-rm -f %{buildroot}%{_libdir}/firefox/removed-files
+source "%BUILD_DIR"/rpm-shared.env
+# See above for explanation of SB2_ variables (needed in both build/install phases)
+%ifarch %arm32
+export SB2_RUST_TARGET_TRIPLE=armv7-unknown-linux-gnueabihf
+%endif
+%ifarch %arm64
+export SB2_RUST_TARGET_TRIPLE=aarch64-unknown-linux-gnu
+%endif
+%ifarch %arm32 %arm64
+export SB2_RUST_EXECVP_SHIM="/usr/bin/env LD_PRELOAD=/usr/lib/libsb2/libsb2.so.1 /usr/bin/env"
+export SB2_RUST_USE_REAL_EXECVP=Yes
+export SB2_RUST_USE_REAL_FN=Yes
+%endif
+
+%{__make} -C %BUILD_DIR/mobile/sailfishos/installer install DESTDIR=%{buildroot}
+
+rm -rf ${RPM_BUILD_ROOT}%{mozappdirdev}/sdk/lib/libxul.so
+ln -s %{mozappdir}/libxul.so ${RPM_BUILD_ROOT}%{mozappdirdev}/sdk/lib/libxul.so
+
+%fdupes -s %{buildroot}%{_includedir}
+%fdupes -s %{buildroot}%{_libdir}
+%{__chmod} +x %{buildroot}%{mozappdir}/*.so
+# Use the system hunspell dictionaries
+%{__rm} -rf ${RPM_BUILD_ROOT}%{mozappdir}/dictionaries
+ln -s %{_datadir}/myspell ${RPM_BUILD_ROOT}%{mozappdir}/dictionaries
+mkdir ${RPM_BUILD_ROOT}%{mozappdir}/defaults
+
+#%if !%{system_nss}
+# symlink to the system libnssckbi.so (CA trust library). It is replaced by
+# the p11-kit-nss-ckbi package to use p11-kit's trust store.
+# There is a strong binary compatibility guarantee.
+#rm ${RPM_BUILD_ROOT}%{mozappdir}/libnssckbi.so
+#ln -s %{_libdir}/libnssckbi.so ${RPM_BUILD_ROOT}%{mozappdir}/libnssckbi.so
+#%endif
+
+# Fix some of the RPM lint errors.
+find "%{buildroot}%{_includedir}" -type f -name '*.h' -exec chmod 0644 {} +;
+
 
 %files
 %{_bindir}/firefox

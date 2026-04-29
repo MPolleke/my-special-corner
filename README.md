@@ -103,11 +103,13 @@ libsm-devel
 libxt-devel
 libxext-devel
 
-
+breaks at building glslopt with cbindgen 0.19.0
+cbindgen 0.26.0 will be in de SDK for Sailfish 5.1
 
 
 # Firefox 102 esr needs:
-needs updated patch1, patch4
+needs updated (gecko-dev) patch 0003 0047
+needs updated (nikolai) patch 0001 0004
 Rust 1.59
 cbindgen 0.23.0
 
@@ -124,7 +126,8 @@ Rust 1.76
 
 # Firefox 140 esr needs:
 Rust 1.85
-
+nspr 4.36.0
+nss 3.110.0
 
 # SailfishOS-5.0.0.62 provides:
 Rust 1.75

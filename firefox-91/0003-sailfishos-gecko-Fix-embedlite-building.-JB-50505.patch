@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: David Llewellyn-Jones <david@flypig.co.uk>
+Date: Wed, 9 Aug 2023 23:30:20 +0100
+Subject: [PATCH] [sailfishos][gecko] Fix embedlite building. JB#50505
+
+Updates the build configuration for embedlite.
+
+Adds the --with-embedlite flag so that we can use the flag in
+embedding/embedlite/config/mozconfig.merqtxulrunner.
+
+Adds the --enable-dconf flag back to allow the build to continue.
+
+Co-authored-by: Raine Makelainen <raine.makelainen@jolla.com>
+---
+ build/moz.configure/old.configure | 1 +
+ toolkit/moz.configure             | 8 ++++++++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/build/moz.configure/old.configure b/build/moz.configure/old.configure
+index 5a06c5816e0d..dd2b486ea19d 100644
+--- a/build/moz.configure/old.configure
++++ b/build/moz.configure/old.configure
+@@ -89,6 +89,7 @@ def old_configure_options(*options):
+     "--datadir",
+     "--enable-crashreporter",
+     "--enable-dbus",
++    '--enable-dconf',
+     "--enable-debug-js-modules",
+     "--enable-dump-painting",
+     "--enable-extensions",
