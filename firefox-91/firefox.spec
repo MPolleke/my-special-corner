@@ -167,7 +167,7 @@ Patch94:    0094-Bug-1799982-Remove-uses-of-inline-flags-from-XPIDL-r.patch
 BuildRequires:	rust
 BuildRequires:	rust-std-static
 BuildRequires:	cargo
-BuildRequires:	cbindgen
+BuildRequires:	cbindgen >= 0.26.0
 BuildRequires:	clang-devel
 BuildRequires:	llvm
 BuildRequires:	python3-base

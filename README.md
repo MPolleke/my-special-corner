@@ -74,6 +74,7 @@ libxau-devel
 libxdmcp-devel
 libpthread-stubs
 libxcb-devel
+xtrans
 libx11-devel or pkgconfig(x11)
 libice-devel
 libsm-devel
@@ -97,6 +98,7 @@ libxau-devel
 libxdmcp-devel
 libpthread-stubs
 libxcb-devel
+xtrans
 libx11-devel or pkgconfig(x11)
 libice-devel
 libsm-devel
@@ -104,7 +106,7 @@ libxt-devel
 libxext-devel
 
 breaks at building glslopt with cbindgen 0.19.0
-cbindgen 0.26.0 will be in de SDK for Sailfish 5.1
+cbindgen 0.26.0 will be in de SDK for Sailfish 5.2 (hopefully)
 
 
 # Firefox 102 esr needs:
