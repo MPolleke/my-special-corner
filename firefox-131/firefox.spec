@@ -25,7 +25,7 @@ Patch2:		0002-Reduce-Rust-build-memory-requirements.patch
 Patch3:		0003-Skip-libclang-version-check.patch
 Patch4:		0004-Disable-devtools-in-browser.patch
 
-BuildRequires:	rust
+BuildRequires:	rust >= 1.76.0
 BuildRequires:	rust-std-static
 BuildRequires:	cargo
 BuildRequires:	cbindgen >= 0.27.0
@@ -141,7 +141,7 @@ ac_add_options --disable-tests
 ac_add_options --enable-default-toolkit=cairo-gtk3-wayland
 ac_add_options --with-system-nspr
 ac_add_options --with-system-nss
-ac_add_options --with-libclang-path='%{build_dir}/lib/'
+#ac_add_options --with-libclang-path='%{build_dir}/lib/'
 ac_add_options --disable-nodejs
 ac_add_options --without-wasm-sandboxed-libraries
 

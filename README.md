@@ -112,7 +112,7 @@ cbindgen 0.26.0 will be in de SDK for Sailfish 5.2 (hopefully)
 # Firefox 102 esr needs:
 needs updated (gecko-dev) patch 0003 0047
 needs updated (nikolai) patch 0001 0004
-Rust 1.59
+Rust 1.59 (in 5.1)
 cbindgen 0.23.0
 
 # Firefox 115 esr needs:

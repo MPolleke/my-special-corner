@@ -142,7 +142,7 @@ ac_add_options --disable-tests
 ac_add_options --enable-default-toolkit=cairo-gtk3-wayland
 ac_add_options --with-system-nspr
 ac_add_options --with-system-nss
-ac_add_options --with-libclang-path='%{build_dir}/lib/'
+#ac_add_options --with-libclang-path='%{build_dir}/lib/'
 ac_add_options --disable-nodejs
 ac_add_options --without-wasm-sandboxed-libraries
 
