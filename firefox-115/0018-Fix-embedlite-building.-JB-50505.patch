@@ -56,14 +56,6 @@ index f2147eb07173..56d7e222c2c7 100644
  elif CONFIG["MOZ_WIDGET_TOOLKIT"] == "gtk":
      UNIFIED_SOURCES += [
          "nsNativeAppSupportUnix.cpp",
-@@ -247,6 +248,7 @@ LOCAL_INCLUDES += [
-     "/dom/commandhandler",
-     "/dom/ipc",
-     "/dom/webbrowserpersist",
-+    '/mobile/sailfishos/embedprocess',
-     "/testing/gtest/mozilla",
-     "/toolkit/crashreporter",
-     "/xpcom/build",
 diff --git a/toolkit/xre/nsEmbedFunctions.cpp b/toolkit/xre/nsEmbedFunctions.cpp
 index b272b4508713..4bb1f3d05a48 100644
 --- a/toolkit/xre/nsEmbedFunctions.cpp
